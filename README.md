@@ -66,8 +66,8 @@ This project is part of an ongoing progression toward a complete System-on-Chip 
 
 - [x] **Phase 1:** Single-Cycle RV32I Datapath
 - [x] **Phase 2:** Behavioral Simulation & Toolchain Integration
-- [ ] **Phase 3:** 5-Stage Pipelining (Fetch, Decode, Execute, Memory, Writeback)
-- [ ] **Phase 4:** Hazard Detection and Data Forwarding Units
+- [x] **Phase 3:** 5-Stage Pipelining (Fetch, Decode, Execute, Memory, Writeback)
+- [x] **Phase 4:** Hazard Detection and Data Forwarding Units
 - [ ] **Phase 5:** Memory-Mapped I/O and AXI4-Lite Bus Integration
 - [ ] **Phase 6:** UART Peripheral implementation
 - [ ] **Phase 7:** Physical deployment on an AMD Artix-7 / Zynq-7000 FPGA
