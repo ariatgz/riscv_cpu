@@ -45,7 +45,7 @@ module rv32_lsu (
                                 dmem_we = 4'b0100;
                                 dmem_wdata[23:16] = rs2_data[7:0];
                                 dmem_wdata[15:0] = 16'b0;
-                                dmem_wdata[32:24]= 8'b0;
+                                dmem_wdata[31:24]= 8'b0;
                                 
                             end else begin
                                 dmem_we = 4'b1000;

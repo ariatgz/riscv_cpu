@@ -44,4 +44,64 @@ package rv32_pkg;
         ALU_PASS_B = 4'b1010 // Used for LUI (passes Immediate straight through)
     } alu_op_e;
 
+    // -------------------------------------------------------------------------
+    // Pipeline Register Structs
+    // -------------------------------------------------------------------------
+
+    // 1. Fetch to Decode (IF/ID)
+    typedef struct packed {
+        logic [31:0] pc;
+        logic [31:0] instr;
+    } if_id_t;
+
+    // 2. Decode to Execute (ID/EX)
+    typedef struct packed {
+        // Data & Addresses
+        logic [31:0] pc;
+        logic [31:0] rs1_data;
+        logic [31:0] rs2_data;
+        logic [31:0] imm;
+        logic [4:0]  rs1_addr;
+        logic [4:0]  rs2_addr;
+        logic [4:0]  rd_addr;
+        
+        // Execute Control
+        alu_op_e     alu_op;
+        logic        alu_src;
+        // Memory Control
+        logic        branch;
+        logic        mem_read;
+        logic        mem_write;
+        logic [3:0]  dmem_we_mask; // For SB/SH/SW
+        // Writeback Control
+        logic        reg_write;
+        logic        mem_to_reg;
+    } id_ex_t;
+
+    // 3. Execute to Memory (EX/MEM)
+    typedef struct packed {
+        logic [31:0] alu_result;
+        logic [31:0] rs2_data;     // Data to store in memory
+        logic [4:0]  rd_addr;
+        
+        // Memory Control
+        logic        mem_read;
+        logic        mem_write;
+        logic [3:0]  dmem_we_mask;
+        // Writeback Control
+        logic        reg_write;
+        logic        mem_to_reg;
+    } ex_mem_t;
+
+    // 4. Memory to Writeback (MEM/WB)
+    typedef struct packed {
+        logic [31:0] alu_result;
+        logic [31:0] mem_rdata;
+        logic [4:0]  rd_addr;
+        
+        // Writeback Control
+        logic        reg_write;
+        logic        mem_to_reg;
+    } mem_wb_t;
+
 endpackage
