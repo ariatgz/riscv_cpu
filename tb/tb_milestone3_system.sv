@@ -1,55 +1,38 @@
 `timescale 1ns / 1ps
-`timescale 1ns / 1ps
 
-module tb_milestone3_system;
-    logic clk = 0;
+module tb_system;
+    logic sys_clk_p;
+    logic sys_clk_n;
     logic rst_n;
-    
-    // CPU <-> Memory Bus
-    logic [31:0] imem_addr, imem_rdata;
-    logic        dmem_wr;
-    logic [3:0]  dmem_we;
-    logic [31:0] dmem_addr, dmem_wdata, dmem_rdata;
+    logic uart_tx_out;
 
-    always #5 clk = ~clk;
-
-    // The CPU
-    rv32_core u_core (
-        .clk        (clk),
-        .rst_n      (rst_n),
-        .imem_addr  (imem_addr),
-        .imem_rdata (imem_rdata),
-        .dmem_wr    (dmem_wr),
-        .dmem_we    (dmem_we),
-        .dmem_addr  (dmem_addr),
-        .dmem_wdata (dmem_wdata),
-        .dmem_rdata (dmem_rdata)
+    // Instantiate the top-level wrapper
+    rv32_system u_dut (
+        .sys_clk_p   (sys_clk_p),
+        .sys_clk_n   (sys_clk_n),
+        .rst_n       (rst_n),
+        .uart_tx_out (uart_tx_out)
     );
 
-    // The Memory (Ensure "program.mem" is in your Vivado simulation directory)
-    rv32_memory #(
-        .INIT_FILE ("program.mem")
-    ) u_mem (
-        .clk        (clk),
-        .imem_addr  (imem_addr),
-        .imem_rdata (imem_rdata),
-        .dmem_wr    (dmem_wr),
-        .dmem_we    (dmem_we),
-        .dmem_addr  (dmem_addr),
-        .dmem_wdata (dmem_wdata),
-        .dmem_rdata (dmem_rdata)
-    );
-
+    // Generate 200MHz Differential Clock (5ns total period)
     initial begin
-        $display("=== Booting RISC-V System ===");
-        rst_n = 0;
-        #15;
-        rst_n = 1;
+        sys_clk_p = 1'b0;
+        sys_clk_n = 1'b1;
+        forever begin
+            #2.5; 
+            sys_clk_p = ~sys_clk_p;
+            sys_clk_n = ~sys_clk_n;
+        end
+    end
 
-        // Run for 200 cycles to let Fibonacci finish
-        repeat (200) @(posedge clk);
+    // Reset Sequence
+    initial begin
+        rst_n = 1'b0;
+        #15;
+        rst_n = 1'b1;
         
-        $display("=== Simulation Finished ===");
+        // Run for 150 microseconds (long enough to transmit one 115200 baud byte)
+        #150000; 
         $finish;
     end
 endmodule
